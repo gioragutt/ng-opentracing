@@ -123,6 +123,46 @@
           }
         }
       }
+    },
+    "tracing": {
+      "projectType": "library",
+      "root": "projects/tracing",
+      "sourceRoot": "projects/tracing/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/tracing/tsconfig.lib.json",
+            "project": "projects/tracing/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/tracing/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/tracing/src/test.ts",
+            "tsConfig": "projects/tracing/tsconfig.spec.json",
+            "karmaConfig": "projects/tracing/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/tracing/tsconfig.lib.json",
+              "projects/tracing/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }},
   "defaultProject": "http-tracing-poc"
 }

@@ -1,0 +1,12 @@
+{
+  "name": "tracing",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^10.0.5",
+    "@angular/core": "^10.0.5",
+    "opentracing": "^0.14.4"
+  },
+  "dependencies": {
+    "tslib": "^2.0.0"
+  }
+}
