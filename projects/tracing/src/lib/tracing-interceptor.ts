@@ -10,8 +10,8 @@ import {
 } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { globalTracer, Span, Tags } from 'opentracing';
-import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { Observable, Observer } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { DefaultTracingOptions, DEFAULT_TRACING_OPTIONS } from './default-options';
 import { getTracingOptions } from './request-options';
 
@@ -22,12 +22,10 @@ export class TracingInterceptor implements HttpInterceptor {
   private logEvents: Set<HttpEventType> | boolean;
 
   constructor(@Inject(DEFAULT_TRACING_OPTIONS) private opts: DefaultTracingOptions) {
-    if (opts.logEvents) {
-      if (typeof opts.logEvents !== 'boolean') {
-        this.logEvents = new Set([...opts.logEvents]);
-      } else {
-        this.logEvents = opts.logEvents;
-      }
+    if (typeof opts.logEvents !== 'boolean') {
+      this.logEvents = new Set([...opts.logEvents]);
+    } else {
+      this.logEvents = opts.logEvents;
     }
   }
 
@@ -50,31 +48,28 @@ export class TracingInterceptor implements HttpInterceptor {
       },
     });
 
-    return next.handle(req).pipe(
-      tap({
-        next: (event: HttpEvent<any>) => {
-          switch (event.type) {
-            case HttpEventType.ResponseHeader:
-              this.handleResponseHeaderEvent(span, event);
-              break;
-            case HttpEventType.Response:
-              this.handleResponseEvent(span, event);
-              break;
-            default:
-              this.handleEvent(span, event);
-              break;
-          }
-        },
-        complete: () => span.finish(),
-      }),
-      catchError((error: HttpErrorResponse) => {
-        this.handleError(span, error);
-        return throwError(error);
-      }),
-    );
+    const tracingObserver: Observer<HttpEvent<any>> = {
+      next: (event: HttpEvent<any>) => {
+        switch (event.type) {
+          case HttpEventType.ResponseHeader:
+            this.logResponseHeaderEvent(span, event);
+            break;
+          case HttpEventType.Response:
+            this.logResponseEvent(span, event);
+            break;
+          default:
+            this.logEvent(span, event);
+            break;
+        }
+      },
+      error: (error: HttpErrorResponse) => this.logError(span, error),
+      complete: () => span.finish(),
+    };
+
+    return next.handle(req).pipe(tap(tracingObserver));
   }
 
-  private handleError(span: Span, error: HttpErrorResponse): void {
+  private logError(span: Span, error: HttpErrorResponse): void {
     span.setTag(Tags.ERROR, true);
     span.addTags({
       [Tags.ERROR]: true,
@@ -84,7 +79,7 @@ export class TracingInterceptor implements HttpInterceptor {
     });
   }
 
-  private handleEvent(span: Span, event: Partial<HttpEvent<any>>): void {
+  private logEvent(span: Span, event: Partial<HttpEvent<any>>): void {
     if (!this.logEvents) {
       return;
     }
@@ -94,13 +89,13 @@ export class TracingInterceptor implements HttpInterceptor {
     }
   }
 
-  private handleResponseHeaderEvent(span: Span, event: HttpHeaderResponse): void {
-    this.handleEvent(span, event);
+  private logResponseHeaderEvent(span: Span, event: HttpHeaderResponse): void {
+    this.logEvent(span, event);
     span.setTag(Tags.HTTP_STATUS_CODE, event.status);
   }
 
-  private handleResponseEvent(span: Span, event: HttpResponse<any>): void {
+  private logResponseEvent(span: Span, event: HttpResponse<any>): void {
     const { body, ...rest } = event;
-    this.handleEvent(span, rest);
+    this.logEvent(span, rest);
   }
 }
