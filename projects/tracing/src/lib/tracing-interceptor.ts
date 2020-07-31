@@ -51,9 +51,6 @@ export class TracingInterceptor implements HttpInterceptor {
     const tracingObserver: Observer<HttpEvent<any>> = {
       next: (event: HttpEvent<any>) => {
         switch (event.type) {
-          case HttpEventType.ResponseHeader:
-            this.logResponseHeaderEvent(span, event);
-            break;
           case HttpEventType.Response:
             this.logResponseEvent(span, event);
             break;
@@ -89,13 +86,9 @@ export class TracingInterceptor implements HttpInterceptor {
     }
   }
 
-  private logResponseHeaderEvent(span: Span, event: HttpHeaderResponse): void {
-    this.logEvent(span, event);
-    span.setTag(Tags.HTTP_STATUS_CODE, event.status);
-  }
-
   private logResponseEvent(span: Span, event: HttpResponse<any>): void {
     const { body, ...rest } = event;
     this.logEvent(span, rest);
+    span.setTag(Tags.HTTP_STATUS_CODE, event.status);
   }
 }
