@@ -5,14 +5,14 @@ export interface DefaultTracingOptions {
   /**
    * Whether or not tracing is enabled or not.
    *
-   * Default: true
+   * Default: `true`
    */
   enabled?: boolean;
 
   /**
    * Configure which individual HttpEvents to log.
    *
-   * Default: true
+   * Default: `true`
    */
   logEvents?: boolean | HttpEventType[] | Set<HttpEventType>;
 
@@ -22,17 +22,14 @@ export interface DefaultTracingOptions {
    * Default: `${req.method} ${req.url}`
    */
   spanName?: (req: HttpRequest<any>) => string;
+
+  /**
+   * Configure whether or not to skip tracing certain requests.
+   *
+   * Default: `true`
+   */
   skipTrace?: (req: HttpRequest<any>) => boolean;
 }
 
 export const DEFAULT_TRACING_OPTIONS =
   new InjectionToken<DefaultTracingOptions>('DEFAULT_TRACING_OPTIONS');
-
-export function normalizeUserInput(opts: DefaultTracingOptions): DefaultTracingOptions {
-  return {
-    enabled: opts.enabled ?? true,
-    logEvents: opts.logEvents ?? true,
-    skipTrace: opts.skipTrace ?? (() => false),
-    spanName: opts.spanName ?? (req => `${req.method} ${req.url}`),
-  };
-}

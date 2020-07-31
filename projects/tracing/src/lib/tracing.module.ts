@@ -1,7 +1,16 @@
-import { ModuleWithProviders, NgModule, Provider } from '@angular/core';
-import { DefaultTracingOptions, DEFAULT_TRACING_OPTIONS, normalizeUserInput } from './default-options';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { ModuleWithProviders, NgModule, Provider } from '@angular/core';
+import { DefaultTracingOptions, DEFAULT_TRACING_OPTIONS } from './default-options';
 import { TracingInterceptor } from './tracing-interceptor';
+
+function normalizeUserInput(opts: DefaultTracingOptions): DefaultTracingOptions {
+  return {
+    enabled: opts.enabled ?? true,
+    logEvents: opts.logEvents ?? true,
+    skipTrace: opts.skipTrace ?? (() => false),
+    spanName: opts.spanName ?? (req => `${req.method} ${req.url}`),
+  };
+}
 
 @NgModule()
 export class TracingModule {
