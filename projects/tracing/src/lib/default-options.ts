@@ -1,6 +1,9 @@
 import { HttpEventType, HttpRequest } from '@angular/common/http';
 import { InjectionToken } from '@angular/core';
 
+/**
+ * Options used to control the default behavior of the tracing of all requests.
+ */
 export interface DefaultTracingOptions {
   /**
    * Whether or not tracing is enabled or not.

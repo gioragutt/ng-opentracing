@@ -36,8 +36,24 @@ export function getTracingOptions(params: HttpParams): HttpTracingOptions | null
   return opts || null;
 }
 
+/**
+ * Options to control the tracing of a single http request
+ */
 export interface HttpTracingOptions {
+  /**
+   * Whether or not to skip tracing the request.
+   *
+   * Default: false
+   */
   skipTrace?: boolean;
+
+  /**
+   * Span to pass to the `childOf` option when creating the request span
+   */
   parentSpan?: Span;
+
+  /**
+   * If specified, will be used to name the request span
+   */
   spanName?: string;
 }
