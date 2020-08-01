@@ -1,5 +1,5 @@
 /*
- * Public API Surface of tracing
+ * Public API Surface of ng-opentracing
  */
 
 export * from './lib/tracing.module';
