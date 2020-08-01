@@ -1,5 +1,7 @@
 # ng-opentracing
 
+![Build](https://github.com/gioragutt/ng-opentracing/workflows/Build/badge.svg)
+
 `ng-opentracing` will help you easily integrate [`opentracing`](https://opentracing.io/) into your application.
 
 > The library currently only wraps usage of `HttpClient`. For more integrations, please open issues!
