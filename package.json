@@ -1,5 +1,5 @@
 {
-  "name": "http-tracing-poc",
+  "name": "ng-opentracing-repo",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1000.4",
-    "@angular-devkit/build-ng-packagr": "~0.1000.4",
+    "@angular-devkit/build-ng-packagr": "~0.1000.5",
     "@angular/cli": "~10.0.4",
     "@angular/compiler-cli": "~10.0.5",
     "@types/node": "^12.11.1",

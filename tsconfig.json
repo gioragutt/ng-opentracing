@@ -14,10 +14,10 @@
       "path": "./tsconfig.spec.json"
     },
     {
-      "path": "./projects/tracing/tsconfig.lib.json"
+      "path": "./projects/ng-opentracing/tsconfig.lib.json"
     },
     {
-      "path": "./projects/tracing/tsconfig.spec.json"
+      "path": "./projects/ng-opentracing/tsconfig.spec.json"
     }
 ]
 }

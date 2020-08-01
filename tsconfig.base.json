@@ -16,9 +16,9 @@
       "dom"
     ],
     "paths": {
-      "tracing": [
-        "dist/tracing/tracing",
-        "dist/tracing"
+      "ng-opentracing": [
+        "dist/ng-opentracing/ng-opentracing",
+        "dist/ng-opentracing"
       ]
     }
   }

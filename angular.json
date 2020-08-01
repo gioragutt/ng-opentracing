@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "http-tracing-poc": {
+    "ng-opentracing-repo": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/http-tracing-poc",
+            "outputPath": "dist/ng-opentracing-repo",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -66,18 +66,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "http-tracing-poc:build"
+            "browserTarget": "ng-opentracing-repo:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "http-tracing-poc:build:production"
+              "browserTarget": "ng-opentracing-repo:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "http-tracing-poc:build"
+            "browserTarget": "ng-opentracing-repo:build"
           }
         },
         "test": {
@@ -114,48 +114,48 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "http-tracing-poc:serve"
+            "devServerTarget": "ng-opentracing-repo:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "http-tracing-poc:serve:production"
+              "devServerTarget": "ng-opentracing-repo:serve:production"
             }
           }
         }
       }
     },
-    "tracing": {
+    "ng-opentracing": {
       "projectType": "library",
-      "root": "projects/tracing",
-      "sourceRoot": "projects/tracing/src",
+      "root": "projects/ng-opentracing",
+      "sourceRoot": "projects/ng-opentracing/src",
       "prefix": "lib",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
-            "tsConfig": "projects/tracing/tsconfig.lib.json",
-            "project": "projects/tracing/ng-package.json"
+            "tsConfig": "projects/ng-opentracing/tsconfig.lib.json",
+            "project": "projects/ng-opentracing/ng-package.json"
           },
           "configurations": {
             "production": {
-              "tsConfig": "projects/tracing/tsconfig.lib.prod.json"
+              "tsConfig": "projects/ng-opentracing/tsconfig.lib.prod.json"
             }
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/tracing/src/test.ts",
-            "tsConfig": "projects/tracing/tsconfig.spec.json",
-            "karmaConfig": "projects/tracing/karma.conf.js"
+            "main": "projects/ng-opentracing/src/test.ts",
+            "tsConfig": "projects/ng-opentracing/tsconfig.spec.json",
+            "karmaConfig": "projects/ng-opentracing/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "projects/tracing/tsconfig.lib.json",
-              "projects/tracing/tsconfig.spec.json"
+              "projects/ng-opentracing/tsconfig.lib.json",
+              "projects/ng-opentracing/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"
@@ -164,5 +164,5 @@
         }
       }
     }},
-  "defaultProject": "http-tracing-poc"
+  "defaultProject": "ng-opentracing-repo"
 }

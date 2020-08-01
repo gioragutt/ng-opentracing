@@ -1,4 +1,10 @@
-# HttpTracingPoc
+# ng-opentracing
+
+`ng-opentracing` will help you easily integrate [`opentracing`](https://opentracing.io/) into your application.
+
+> NOTE: `ng-opentracing` currently only wraps usage of HttpClient. For more integrations, please open issues!
+
+# Angular CLI Stuff..
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.0.4.
 
