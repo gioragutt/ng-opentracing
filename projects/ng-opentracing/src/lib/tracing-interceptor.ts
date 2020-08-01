@@ -3,13 +3,12 @@ import {
   HttpEvent,
   HttpEventType,
   HttpHandler,
-  HttpHeaderResponse,
   HttpInterceptor,
   HttpRequest,
   HttpResponse,
 } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { globalTracer, Span, Tags, FORMAT_HTTP_HEADERS } from 'opentracing';
+import { FORMAT_HTTP_HEADERS, globalTracer, Span, Tags } from 'opentracing';
 import { Observable, Observer } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { DefaultTracingOptions, DEFAULT_TRACING_OPTIONS } from './default-options';
@@ -34,7 +33,13 @@ export class TracingInterceptor implements HttpInterceptor {
       return next.handle(req);
     }
 
-    const { parentSpan, spanName, skipTrace } = getTracingOptions(req.params) ?? {};
+    const {
+      parentSpan,
+      spanName,
+      skipTrace,
+      logResponseBody,
+    } = getTracingOptions(req.params) ?? {};
+
     if (skipTrace) {
       return next.handle(req);
     }
@@ -52,7 +57,7 @@ export class TracingInterceptor implements HttpInterceptor {
       next: (event: HttpEvent<any>) => {
         switch (event.type) {
           case HttpEventType.Response:
-            this.logResponseEvent(span, event);
+            this.logResponseEvent(span, event, logResponseBody);
             break;
           default:
             this.logEvent(span, event);
@@ -91,9 +96,14 @@ export class TracingInterceptor implements HttpInterceptor {
     }
   }
 
-  private logResponseEvent(span: Span, event: HttpResponse<any>): void {
-    const { body, ...rest } = event;
-    this.logEvent(span, rest);
+  private logResponseEvent(span: Span, event: HttpResponse<any>, logResponseBody: boolean | undefined): void {
+    if (logResponseBody || this.opts.logResponseBody) {
+      this.logEvent(span, event);
+    } else {
+      const { body, ...rest } = event;
+      this.logEvent(span, rest);
+    }
+
     span.setTag(Tags.HTTP_STATUS_CODE, event.status);
   }
 }

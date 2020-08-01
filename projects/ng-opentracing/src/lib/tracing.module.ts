@@ -9,6 +9,7 @@ function normalizeUserInput(opts: DefaultTracingOptions): DefaultTracingOptions 
     logEvents: opts.logEvents ?? true,
     skipTrace: opts.skipTrace ?? (() => false),
     spanName: opts.spanName ?? (req => `${req.method} ${req.url}`),
+    logResponseBody: opts.logResponseBody ?? true,
   };
 }
 

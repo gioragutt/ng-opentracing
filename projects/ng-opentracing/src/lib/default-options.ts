@@ -32,6 +32,13 @@ export interface DefaultTracingOptions {
    * Default: `true`
    */
   skipTrace?: (req: HttpRequest<any>) => boolean;
+
+  /**
+   * Configure whether or not to log the response body of requests.
+   *
+   * Default: `true`.
+   */
+  logResponseBody?: boolean;
 }
 
 export const DEFAULT_TRACING_OPTIONS =

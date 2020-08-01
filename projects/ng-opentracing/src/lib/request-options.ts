@@ -56,4 +56,11 @@ export interface HttpTracingOptions {
    * If specified, will be used to name the request span
    */
   spanName?: string;
+
+  /**
+   * If specified, will override the default tracing option
+   *
+   * Default: `undefined`.
+   */
+  logResponseBody?: boolean;
 }
