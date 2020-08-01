@@ -12,7 +12,7 @@
 npm i opentracing ng-opentracing
 ```
 
-First, start by adding the `TracingModule` to your `AppModule`, and initializaing the [opentracing globalTracer](https://github.com/opentracing/opentracing-javascript#global-tracer).
+First, start by adding the `TracingModule` to your `AppModule`, and initializing the [opentracing globalTracer](https://github.com/opentracing/opentracing-javascript#global-tracer).
 
 ```ts
 import { NgModule } from '@angular/core';
