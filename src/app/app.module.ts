@@ -12,6 +12,6 @@ import { AppComponent } from './app.component';
     TracingModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule { }
