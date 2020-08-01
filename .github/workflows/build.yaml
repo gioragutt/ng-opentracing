@@ -35,5 +35,6 @@ jobs:
           cd projects/ng-opentracing
           npm ci
           cd ../../
+          npm ci
           npm run lint
           npm run build:ci
