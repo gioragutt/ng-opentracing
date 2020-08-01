@@ -29,6 +29,8 @@ jobs:
 
       - name: npm ci and npm run build
         run: |
+          cd projects/ng-opentracing
           npm ci
+          cd ../../
           npm run lint
           npm run build:ci
