@@ -9,7 +9,7 @@ import {
   HttpResponse,
 } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { globalTracer, Span, Tags } from 'opentracing';
+import { globalTracer, Span, Tags, FORMAT_HTTP_HEADERS } from 'opentracing';
 import { Observable, Observer } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { DefaultTracingOptions, DEFAULT_TRACING_OPTIONS } from './default-options';
@@ -62,6 +62,11 @@ export class TracingInterceptor implements HttpInterceptor {
       error: (error: HttpErrorResponse) => this.logError(span, error),
       complete: () => span.finish(),
     };
+
+    const tracingHeaders: Record<string, string> = {};
+    globalTracer().inject(span, FORMAT_HTTP_HEADERS, tracingHeaders);
+
+    req = req.clone({ setHeaders: tracingHeaders });
 
     return next.handle(req).pipe(tap(tracingObserver));
   }
