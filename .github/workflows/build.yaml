@@ -30,4 +30,5 @@ jobs:
       - name: npm ci and npm run build
         run: |
           npm ci
+          npm run lint
           npm run build:ci

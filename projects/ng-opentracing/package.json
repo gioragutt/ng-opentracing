@@ -2,6 +2,11 @@
   "name": "ng-opentracing",
   "version": "0.0.1",
   "peerDependencies": {
+    "@angular/common": "*",
+    "@angular/core": "*",
+    "opentracing": "*"
+  },
+  "devDependencies": {
     "@angular/common": "^10.0.5",
     "@angular/core": "^10.0.5",
     "opentracing": "^0.14.4"
