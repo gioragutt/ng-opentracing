@@ -100,8 +100,10 @@ export class TracingInterceptor implements HttpInterceptor {
     span.setTag(Tags.HTTP_STATUS_CODE, event.status);
     const log = { ...event };
 
-    if (logResponseBody === false || !this.opts.logResponseBody) {
-      delete log.body;
+    if (logResponseBody !== true) {
+      if (logResponseBody === false || !this.opts.logResponseBody) {
+        delete log.body;
+      }
     }
 
     this.logEvent(span, log);

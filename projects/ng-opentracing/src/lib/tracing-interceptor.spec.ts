@@ -1,13 +1,12 @@
-import { HttpClient, HttpEventType, HttpResponse, HttpRequest } from '@angular/common/http';
+import { HttpClient, HttpEventType, HttpResponse } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController, TestRequest } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { initGlobalTracer, Tags } from 'opentracing';
-import { MockSpan } from 'opentracing/lib/mock_tracer';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { DefaultTracingOptions } from './default-options';
 import { createTracingOptions } from './request-options';
-import { TestTracer, TEST_SPAN_ID_HEADER, TEST_TRACE_ID_HEADER } from './test-tracer';
+import { logOfType, logsOf, TestTracer, TEST_SPAN_ID_HEADER, TEST_TRACE_ID_HEADER } from './test-tracer';
 import { TracingModule } from './tracing.module';
 
 describe('TracingInterceptorService', () => {
@@ -114,21 +113,19 @@ describe('TracingInterceptorService', () => {
   it('should log the response body by default', () => {
     http.get('/endpoint13').subscribe();
 
-    const request = httpMock.expectOne('/endpoint13');
-    request.event(new HttpResponse<any>({ status: 200, body: 'response body' }));
+    expectSuccessfulRequest(httpMock, '/endpoint13', { body: 'response body' });
 
-    const { fields } = logsOf(tracer.report().spans[0]).find(log => log.fields.type === 'Response');
+    const { fields } = logOfType(tracer.report().spans[0], HttpEventType.Response);
 
     expect(fields.body).toBe('response body');
   });
 
   it('should not log the response body when logResponseBody=false', () => {
-    http.get('/endpoint13', { params: createTracingOptions({ logResponseBody: false }) }).subscribe();
+    http.get('/endpoint16', { params: createTracingOptions({ logResponseBody: false }) }).subscribe();
 
-    const request = httpMock.expectOne('/endpoint13');
-    request.event(new HttpResponse<any>({ status: 200, body: 'response body' }));
+    expectSuccessfulRequest(httpMock, '/endpoint16', { body: 'response body' });
 
-    const { fields } = logsOf(tracer.report().spans[0]).find(log => log.fields.type === 'Response');
+    const { fields } = logOfType(tracer.report().spans[0], HttpEventType.Response);
 
     expect(fields.body).toBeUndefined();
   });
@@ -199,19 +196,40 @@ describe('DefaultTracingOptions', () => {
     expect(spans.length).toBe(1);
     expect(spans[0].operationName()).not.toContain('no-trace');
   });
+
+  it('should not log the response body when logResponseBody=false', () => {
+    const { http, httpMock, tracer } = configureTracingModule({ logResponseBody: false });
+
+    http.get('/endpoint14').subscribe();
+
+    expectSuccessfulRequest(httpMock, '/endpoint14', { body: 'response body' });
+
+    const { fields } = logOfType(tracer.report().spans[0], HttpEventType.Response);
+
+    expect(fields.body).toBeUndefined();
+  });
+
+  it('should log the response body when logResponseBody=false is overridden in the request', () => {
+    const { http, httpMock, tracer } = configureTracingModule({ logResponseBody: false });
+
+    http.get('/endpoint15', { params: createTracingOptions({ logResponseBody: true }) }).subscribe();
+
+    expectSuccessfulRequest(httpMock, '/endpoint15', { body: 'response body' });
+
+    const { fields } = logOfType(tracer.report().spans[0], HttpEventType.Response);
+
+    expect(fields.body).toBe('response body');
+  });
 });
 
-function expectSuccessfulRequest(httpMock: HttpTestingController, url: string): TestRequest {
+function expectSuccessfulRequest<T>(
+  httpMock: HttpTestingController,
+  url: string,
+  extraData: Partial<Parameters<HttpResponse<any>['clone']>>[0] = {},
+): TestRequest {
   const request = httpMock.expectOne(url);
-  request.event(new HttpResponse<any>({ status: 200 }));
+  request.event(new HttpResponse<any>({ status: 200, ...extraData }));
   return request;
-}
-
-function logsOf(span: MockSpan): Array<{
-  fields: { [key: string]: any };
-  timestamp?: number;
-}> {
-  return (span as any)._logs;
 }
 
 // tslint:disable-next-line: typedef
@@ -231,4 +249,3 @@ function configureTracingModule(opts?: DefaultTracingOptions) {
 
   return { tracer, httpMock, http };
 }
-
