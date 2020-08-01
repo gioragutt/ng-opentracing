@@ -97,13 +97,13 @@ export class TracingInterceptor implements HttpInterceptor {
   }
 
   private logResponseEvent(span: Span, event: HttpResponse<any>, logResponseBody: boolean | undefined): void {
-    if (logResponseBody || this.opts.logResponseBody) {
-      this.logEvent(span, event);
-    } else {
-      const { body, ...rest } = event;
-      this.logEvent(span, rest);
+    span.setTag(Tags.HTTP_STATUS_CODE, event.status);
+    const log = { ...event };
+
+    if (logResponseBody === false || !this.opts.logResponseBody) {
+      delete log.body;
     }
 
-    span.setTag(Tags.HTTP_STATUS_CODE, event.status);
+    this.logEvent(span, log);
   }
 }
