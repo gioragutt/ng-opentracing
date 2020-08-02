@@ -222,7 +222,7 @@ describe('DefaultTracingOptions', () => {
   });
 });
 
-function expectSuccessfulRequest<T>(
+function expectSuccessfulRequest(
   httpMock: HttpTestingController,
   url: string,
   extraData: Partial<Parameters<HttpResponse<any>['clone']>>[0] = {},
