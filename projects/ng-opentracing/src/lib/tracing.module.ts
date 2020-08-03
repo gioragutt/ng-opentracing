@@ -1,9 +1,9 @@
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { ModuleWithProviders, NgModule, Provider } from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { DefaultTracingOptions, DEFAULT_TRACING_OPTIONS } from './default-options';
 import { TracingInterceptor } from './tracing-interceptor';
 
-function normalizeUserInput(opts: DefaultTracingOptions): DefaultTracingOptions {
+export function normalizeUserInput(opts: DefaultTracingOptions): DefaultTracingOptions {
   return {
     enabled: opts.enabled ?? true,
     logEvents: opts.logEvents ?? true,
