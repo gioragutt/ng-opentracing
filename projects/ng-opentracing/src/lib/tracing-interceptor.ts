@@ -9,8 +9,8 @@ import {
 } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { FORMAT_HTTP_HEADERS, globalTracer, Span, Tags } from 'opentracing';
-import { Observable, Observer } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { catchError, finalize, tap } from 'rxjs/operators';
 import { DefaultTracingOptions, DEFAULT_TRACING_OPTIONS } from './default-options';
 import { getTracingOptions } from './request-options';
 
@@ -53,8 +53,13 @@ export class TracingInterceptor implements HttpInterceptor {
       },
     });
 
-    const tracingObserver: Observer<HttpEvent<any>> = {
-      next: (event: HttpEvent<any>) => {
+    const tracingHeaders: Record<string, string> = {};
+    globalTracer().inject(span, FORMAT_HTTP_HEADERS, tracingHeaders);
+
+    req = req.clone({ setHeaders: tracingHeaders });
+
+    return next.handle(req).pipe(
+      tap((event: HttpEvent<any>) => {
         switch (event.type) {
           case HttpEventType.Response:
             this.logResponseEvent(span, event, logResponseBody);
@@ -63,17 +68,13 @@ export class TracingInterceptor implements HttpInterceptor {
             this.logEvent(span, event);
             break;
         }
-      },
-      error: (error: HttpErrorResponse) => this.logError(span, error),
-      complete: () => span.finish(),
-    };
-
-    const tracingHeaders: Record<string, string> = {};
-    globalTracer().inject(span, FORMAT_HTTP_HEADERS, tracingHeaders);
-
-    req = req.clone({ setHeaders: tracingHeaders });
-
-    return next.handle(req).pipe(tap(tracingObserver));
+      }),
+      catchError((error: HttpErrorResponse) => {
+        this.logError(span, error);
+        return throwError(error);
+      }),
+      finalize(() => span.finish()),
+    );
   }
 
   private logError(span: Span, error: HttpErrorResponse): void {
