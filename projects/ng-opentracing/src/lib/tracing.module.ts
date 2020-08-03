@@ -15,24 +15,20 @@ function normalizeUserInput(opts: DefaultTracingOptions): DefaultTracingOptions 
 
 @NgModule()
 export class TracingModule {
-  static forRoot(opts?: DefaultTracingOptions): ModuleWithProviders<TracingModule> {
-    const defaultOpts = normalizeUserInput(opts || {});
-
-    const providers: Provider[] = defaultOpts.enabled ? [
-      {
-        provide: DEFAULT_TRACING_OPTIONS,
-        useValue: defaultOpts,
-      },
-      {
-        provide: HTTP_INTERCEPTORS,
-        useClass: TracingInterceptor,
-        multi: true,
-      },
-    ] : [];
-
+  static forRoot(opts: DefaultTracingOptions = {}): ModuleWithProviders<TracingModule> {
     return {
       ngModule: TracingModule,
-      providers,
+      providers: opts.enabled !== false ? [
+        {
+          provide: DEFAULT_TRACING_OPTIONS,
+          useValue: normalizeUserInput(opts),
+        },
+        {
+          provide: HTTP_INTERCEPTORS,
+          useClass: TracingInterceptor,
+          multi: true,
+        },
+      ] : [],
     };
   }
 }
