@@ -78,13 +78,22 @@ export class TracingInterceptor implements HttpInterceptor {
   }
 
   private logError(span: Span, error: HttpErrorResponse): void {
-    span.setTag(Tags.ERROR, true);
-    span.addTags({
+    const tags = {
       [Tags.ERROR]: true,
       'error.kind': error.name,
       'error.object': error,
       message: error.message,
-    });
+    };
+
+    // zipkin-javascript-opentracing span implementation does not
+    // implement the `addTags` method.
+    if (typeof span.addTags === 'function') {
+      span.addTags(tags);
+    } else {
+      Object.entries(tags).forEach(([key, value]) => {
+        span.setTag(key, value);
+      });
+    }
   }
 
   private logEvent(span: Span, event: Partial<HttpEvent<any>>): void {
